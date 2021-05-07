@@ -93,6 +93,9 @@ function buildDropDown() {
         ddItem.textContent = distinctEvents[index];
         eventDD.appendChild(ddItem);
     }
+
+    displayStats();
+    displayData();
 }
 
 function getEvents(element) {
@@ -105,5 +108,74 @@ function getEvents(element) {
                 return item;
             }
         })
+    }
+    else
+    {
+        filteredEvents = events;
+    }
+
+    displayStats();
+    displayData();
+}
+
+//This will display stats for the events 
+function displayStats() {
+    
+    let total = 0; 
+    let average = 0;
+    let most = 0;
+    let least = -1;
+    let currentAttendance = 0;
+
+    for (let index = 0; index < filteredEvents.length; index++) {
+        
+        currentAttendance = filteredEvents[index].attendance;
+        total += currentAttendance; 
+
+        //replace this with array function
+        if (most < currentAttendance) {
+            most = currentAttendance;
+        }        
+
+        //replace this with array function
+        if (least > currentAttendance || least < 0) {
+            least = currentAttendance;
+        }
+
+    }
+    average = total / filteredEvents.length;
+
+    document.getElementById("total").innerHTML = total.toLocaleString();
+    document.getElementById("most").innerHTML = most.toLocaleString();
+    document.getElementById("least").innerHTML = least.toLocaleString();
+    document.getElementById("average").innerHTML = average.toLocaleString(
+        undefined, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        }
+    );
+}
+
+//display the data from the array 
+function displayData() {
+    const template = document.getElementById("eventData-template");
+    const eventBody = document.getElementById("eventBody")
+
+    eventBody.innerHTML = "";
+
+    //TODO: grab the events loacl storage
+
+    for (let i = 0; i < filteredEvents.length; i++) {
+
+        const eventRow = document.importNode(template.content, true);
+        var eventCols = eventRow.querySelectorAll("td");
+        
+        eventCols[0].textContent = filteredEvents[i].event;
+        eventCols[1].textContent = filteredEvents[i].city;
+        eventCols[2].textContent = filteredEvents[i].state;
+        eventCols[3].textContent = filteredEvents[i].attendance;
+        eventCols[4].textContent = new Date(filteredEvents[i].date).toLocaleDateString();
+
+        eventBody.appendChild(eventRow);
     }
 }
